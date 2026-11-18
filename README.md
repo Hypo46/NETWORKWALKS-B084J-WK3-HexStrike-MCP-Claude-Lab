@@ -15,12 +15,10 @@ This repository is a personal lab writeup for the **NetworkWalks Cybersecurity P
 <details>
 <summary><strong>📌 Documentation notes & assumptions (click to expand)</strong></summary>
 
-This README was generated from the lab brief, confirmed AI prompts, and the author's own screenshot filenames/timestamps. A few things are flagged here rather than silently guessed, per the project's own documentation standard:
-
-- **Screenshot ordering:** Screenshots are placed in the order their filenames' timestamps suggest (chronological capture order), not from having viewed each image's contents. Captions describe the *expected* step at that point in the workflow — verify each image against its caption before publishing, and adjust/reorder if needed.
-- **Tool versions:** Exact HexStrike AI build number, Claude Desktop version, and JTR version actually shown in the screenshots are not independently confirmed here — the install commands below reflect the two referenced repositories' current public documentation. Replace with the literal version strings from your terminal output where they differ.
-- **Claude Desktop packaging:** The `aaddrick/claude-desktop-debian` project has changed its package name over time (now ships as `claude-desktop-unofficial` alongside Anthropic's own official APT repo on some branches). Use whichever command matches what your screenshots actually show.
-- **Flags:** Two flags are included below (`flag1` and the `persistence` flag) because their identifiers match this lab session. Two additional candidate strings supplied during drafting used a different naming/date pattern and were left out as likely belonging to a different lab — confirm before adding them here.
+- **Screenshot captions:** Each screenshot below is placed in the order its filename timestamp suggests, with a caption describing the *expected* step at that point in the workflow. The exact visual content of each of the 26 lab screenshots hasn't been individually reviewed yet — swap in the real caption for any image where it doesn't match what's actually shown.
+- **MCP config:** The `claude_desktop_config.json` block in Module 01 is transcribed directly from the lab's own screenshot (not the generic example from HexStrike AI's public README) — it's the real config used in this session.
+- **Root lab-report filenames:** `W3-PM1 - Week3 - Project Module1 - Passwor...` and `W3-PM2 - Week3 - Project Module2 - Passwor...` are shown truncated in the GitHub file list — complete the exact filenames below once you can see the full names.
+- **`PDF/` folder contents:** Referenced below as holding supporting PDF assets (e.g. the target lab PDF) — confirm/adjust what's actually inside it.
 
 </details>
 
@@ -130,27 +128,51 @@ flowchart TD
 
 ## Repository Structure
 
-> Proposed structure, shown for navigation. Match this to your actual folder layout before committing — screenshot filenames below are kept exactly as captured.
+> Reflects the actual repo layout — screenshots live directly inside each module's folder (no separate `screenshots/` subfolder), filenames unchanged from capture.
 
 ```text
 NETWORKWALKS-B084J-WK3-HexStrike-MCP-Claude-Lab/
 │
 ├── README.md
 │
-├── Module-01-HexStrike-MCP-Claude/
-│   └── screenshots/
-│       ├── Screenshot 2026-11-16 031657.png
-│       ├── Screenshot 2026-11-16 031717.png
-│       ├── ... (18 screenshots total)
+├── HexStrike Claude/
+│   ├── 7.2.1. LAB PRACTICE - How to setup Hexstrike MCP ....pdf
+│   ├── Screenshot 2026-11-16 031657.png
+│   ├── Screenshot 2026-11-16 031717.png
+│   ├── Screenshot 2026-11-16 031740.png
+│   ├── Screenshot 2026-11-16 032516.png
+│   ├── Screenshot 2026-11-16 032539.png
+│   ├── Screenshot 2026-11-16 032607.png
+│   ├── Screenshot 2026-11-16 032719.png
+│   ├── Screenshot 2026-11-16 032830.png
+│   ├── Screenshot 2026-11-16 032907.png
+│   ├── Screenshot 2026-11-16 033436.png
+│   ├── Screenshot 2026-11-16 033450.png
+│   ├── Screenshot 2026-11-16 033636.png
+│   ├── Screenshot 2026-11-16 033925.png
+│   ├── Screenshot 2026-11-16 034635.png
+│   ├── Screenshot 2026-11-16 034653.png
+│   ├── Screenshot 2026-11-16 034854.png
+│   ├── Screenshot 2026-11-16 042142.png
+│   ├── Screenshot 2026-11-16 044146.png
+│   └── Screenshot 2026-11-16 044157.png
 │
-├── Module-02-JTR-PDF-Password-Recovery/
-│   └── screenshots/
-│       ├── Screenshot 2026-11-18 052242.png
-│       ├── Screenshot 2026-11-18 052406.png
-│       ├── ... (8 screenshots total)
+├── JTR Claude/
+│   ├── Screenshot 2026-11-18 052242.png
+│   ├── Screenshot 2026-11-18 052406.png
+│   ├── Screenshot 2026-11-18 052700.png
+│   ├── Screenshot 2026-11-18 053031.png
+│   ├── Screenshot 2026-11-18 053104.png
+│   ├── Screenshot 2026-11-18 053247.png
+│   ├── Screenshot 2026-11-18 053436.png
+│   ├── Screenshot 2026-11-18 053517.png
+│   └── z. Optional Module Lab - JTR Password Cracking Lab v1 (AI-version).pdf
 │
-└── docs/
-    └── lab-manuals/   (original NetworkWalks lab PDFs, optional)
+├── PDF/
+│   └── (supporting PDF assets — e.g. target lab PDF; confirm exact contents)
+│
+├── W3-PM1 - Week3 - Project Module1 - Passwor....pdf   (complete exact filename)
+└── W3-PM2 - Week3 - Project Module2 - Passwor....pdf   (complete exact filename)
 ```
 
 ---
@@ -178,13 +200,8 @@ Claude Desktop (via the `aaddrick/claude-desktop-debian` community packaging pro
 **Step 1 — Install Claude Desktop (Debian/Kali via APT repo)**
 
 ```bash
-# Add the project's signing key
 curl -fsSL https://aaddrick.github.io/claude-desktop-debian/KEY.gpg | sudo gpg --dearmor -o /usr/share/keyrings/claude-desktop.gpg
-
-# Add the APT source
 echo "deb [signed-by=/usr/share/keyrings/claude-desktop.gpg arch=amd64,arm64] https://aaddrick.github.io/claude-desktop-debian stable main" | sudo tee /etc/apt/sources.list.d/claude-desktop.list
-
-# Install
 sudo apt update
 sudo apt install claude-desktop
 ```
@@ -197,87 +214,107 @@ sudo apt install claude-desktop
 git clone https://github.com/0x4m4/hexstrike-ai.git
 cd hexstrike-ai
 
-# Create and activate a virtual environment
 python3 -m venv hexstrike-env
 source hexstrike-env/bin/activate
 
-# Install dependencies
 pip3 install -r requirements.txt
 ```
 
 **Step 3 — Start the HexStrike AI MCP server**
 
 ```bash
-# Start the server (default port 8888)
 python3 hexstrike_server.py
-
-# Optional: debug mode
-python3 hexstrike_server.py --debug
-
-# Optional: custom port
-python3 hexstrike_server.py --port 8888
 ```
 
 **Step 4 — Verify the server is running**
 
 ```bash
-curl http://localhost:8888/health
+curl http://127.0.0.1:8888/health
 ```
 
 **Step 5 — Configure Claude Desktop to use the HexStrike MCP server**
 
-Edit (or create) `~/.config/Claude/claude_desktop_config.json`:
+Edit `~/.config/Claude/claude_desktop_config.json` (this is the actual configuration used in this lab):
 
 ```json
 {
   "mcpServers": {
     "hexstrike-ai": {
-      "command": "python3",
+      "command": "/home/kali/hexstrike-ai/hexstrike-env/bin/python",
       "args": [
         "/home/kali/hexstrike-ai/hexstrike_mcp.py",
         "--server",
-        "http://localhost:8888"
-      ],
-      "description": "HexStrike AI v6.0 - Advanced Cybersecurity Automation Platform",
-      "timeout": 300,
-      "disabled": false
+        "http://127.0.0.1:8888"
+      ]
     }
   }
 }
 ```
 
-> **Note:** `/home/kali/hexstrike-ai/...` is an example path. Replace it with wherever you actually cloned the repository on your own machine — this is not a fixed install location.
+> This points `command` straight at the virtual environment's Python interpreter (rather than a bare `python3`), which avoids having to activate the venv before Claude Desktop launches it. Paths are specific to this machine — adjust `/home/kali/hexstrike-ai/...` to match your own clone location.
 
 **Step 6 — Restart Claude Desktop** so it picks up the new MCP server, then open a chat and confirm HexStrike's tools are available to it.
 
 ### Screenshot Evidence — Module 01
 
-*(Ordered by capture timestamp; verify each caption against the actual image before publishing.)*
+*(Captions describe the expected step based on filename order — confirm against each image.)*
 
-| # | Screenshot | Expected content |
-|---|---|---|
-| 1 | `Screenshot 2026-11-16 031657.png` | Lab start / desktop environment |
-| 2 | `Screenshot 2026-11-16 031717.png` | HexStrike AI banner / repo clone |
-| 3 | `Screenshot 2026-11-16 031740.png` | Python virtual environment creation |
-| 4 | `Screenshot 2026-11-16 032516.png` | Dependency installation (`pip3 install -r requirements.txt`) |
-| 5 | `Screenshot 2026-11-16 032539.png` | HexStrike server startup |
-| 6 | `Screenshot 2026-11-16 032607.png` | Server health check / console output |
-| 7 | `Screenshot 2026-11-16 032719.png` | Claude Desktop installation |
-| 8 | `Screenshot 2026-11-16 032830.png` | Claude Desktop launched |
-| 9 | `Screenshot 2026-11-16 032907.png` | MCP config file (`claude_desktop_config.json`) being edited |
-| 10 | `Screenshot 2026-11-16 033436.png` | MCP config saved / Claude Desktop restarted |
-| 11 | `Screenshot 2026-11-16 033450.png` | Claude Desktop recognizing the HexStrike MCP server |
-| 12 | `Screenshot 2026-11-16 033636.png` | Verification prompt/response in Claude Desktop |
-| 13 | `Screenshot 2026-11-16 033925.png` | Tool list / capability confirmation |
-| 14 | `Screenshot 2026-11-16 034635.png` | Additional configuration/verification |
-| 15 | `Screenshot 2026-11-16 034653.png` | Additional configuration/verification |
-| 16 | `Screenshot 2026-11-16 034854.png` | Additional configuration/verification |
-| 17 | `Screenshot 2026-11-16 042142.png` | Final environment check |
-| 18 | `Screenshot 2026-11-16 044157.png` | Module 01 completion |
+#### Lab start
+<a href="HexStrike%20Claude/Screenshot%202026-11-16%20031657.png"><img src="HexStrike%20Claude/Screenshot%202026-11-16%20031657.png" alt="Lab start" width="700"></a>
 
-```markdown
-![HexStrike AI MCP server setup](Module-01-HexStrike-MCP-Claude/screenshots/Screenshot%202026-11-16%20032539.png)
-```
+#### HexStrike AI repository clone
+<a href="HexStrike%20Claude/Screenshot%202026-11-16%20031717.png"><img src="HexStrike%20Claude/Screenshot%202026-11-16%20031717.png" alt="HexStrike repo clone" width="700"></a>
+
+#### Python virtual environment creation
+<a href="HexStrike%20Claude/Screenshot%202026-11-16%20031740.png"><img src="HexStrike%20Claude/Screenshot%202026-11-16%20031740.png" alt="Virtual environment creation" width="700"></a>
+
+#### Dependency installation
+<a href="HexStrike%20Claude/Screenshot%202026-11-16%20032516.png"><img src="HexStrike%20Claude/Screenshot%202026-11-16%20032516.png" alt="pip install dependencies" width="700"></a>
+
+#### HexStrike server startup
+<a href="HexStrike%20Claude/Screenshot%202026-11-16%20032539.png"><img src="HexStrike%20Claude/Screenshot%202026-11-16%20032539.png" alt="HexStrike server startup" width="700"></a>
+
+#### Server health check
+<a href="HexStrike%20Claude/Screenshot%202026-11-16%20032607.png"><img src="HexStrike%20Claude/Screenshot%202026-11-16%20032607.png" alt="Server health check" width="700"></a>
+
+#### Claude Desktop installation
+<a href="HexStrike%20Claude/Screenshot%202026-11-16%20032719.png"><img src="HexStrike%20Claude/Screenshot%202026-11-16%20032719.png" alt="Claude Desktop installation" width="700"></a>
+
+#### Claude Desktop launched
+<a href="HexStrike%20Claude/Screenshot%202026-11-16%20032830.png"><img src="HexStrike%20Claude/Screenshot%202026-11-16%20032830.png" alt="Claude Desktop launched" width="700"></a>
+
+#### MCP config file being edited
+<a href="HexStrike%20Claude/Screenshot%202026-11-16%20032907.png"><img src="HexStrike%20Claude/Screenshot%202026-11-16%20032907.png" alt="Editing claude_desktop_config.json" width="700"></a>
+
+#### MCP config saved / Claude Desktop restarted
+<a href="HexStrike%20Claude/Screenshot%202026-11-16%20033436.png"><img src="HexStrike%20Claude/Screenshot%202026-11-16%20033436.png" alt="MCP config saved" width="700"></a>
+
+#### Claude Desktop recognizing the HexStrike MCP server
+<a href="HexStrike%20Claude/Screenshot%202026-11-16%20033450.png"><img src="HexStrike%20Claude/Screenshot%202026-11-16%20033450.png" alt="MCP server recognized" width="700"></a>
+
+#### Verification prompt/response in Claude Desktop
+<a href="HexStrike%20Claude/Screenshot%202026-11-16%20033636.png"><img src="HexStrike%20Claude/Screenshot%202026-11-16%20033636.png" alt="Verification prompt" width="700"></a>
+
+#### Tool list / capability confirmation
+<a href="HexStrike%20Claude/Screenshot%202026-11-16%20033925.png"><img src="HexStrike%20Claude/Screenshot%202026-11-16%20033925.png" alt="Tool list confirmation" width="700"></a>
+
+#### Additional configuration / verification
+<a href="HexStrike%20Claude/Screenshot%202026-11-16%20034635.png"><img src="HexStrike%20Claude/Screenshot%202026-11-16%20034635.png" alt="Additional verification" width="700"></a>
+
+#### Additional configuration / verification
+<a href="HexStrike%20Claude/Screenshot%202026-11-16%20034653.png"><img src="HexStrike%20Claude/Screenshot%202026-11-16%20034653.png" alt="Additional verification" width="700"></a>
+
+#### Additional configuration / verification
+<a href="HexStrike%20Claude/Screenshot%202026-11-16%20034854.png"><img src="HexStrike%20Claude/Screenshot%202026-11-16%20034854.png" alt="Additional verification" width="700"></a>
+
+#### Final environment check
+<a href="HexStrike%20Claude/Screenshot%202026-11-16%20042142.png"><img src="HexStrike%20Claude/Screenshot%202026-11-16%20042142.png" alt="Final environment check" width="700"></a>
+
+#### Module 01 wrap-up
+<a href="HexStrike%20Claude/Screenshot%202026-11-16%20044146.png"><img src="HexStrike%20Claude/Screenshot%202026-11-16%20044146.png" alt="Module 01 wrap-up" width="700"></a>
+
+#### Module 01 completion
+<a href="HexStrike%20Claude/Screenshot%202026-11-16%20044157.png"><img src="HexStrike%20Claude/Screenshot%202026-11-16%20044157.png" alt="Module 01 completion" width="700"></a>
 
 ### Observations
 Setting up the MCP bridge is primarily a one-time configuration task (path correctness in the JSON config is the most common failure point). Once connected, HexStrike's tool catalog becomes available to Claude Desktop as callable MCP tools rather than shell commands the operator types manually.
@@ -334,22 +371,31 @@ The flag contained in the lab PDF was retrieved upon successful access (see [Res
 
 ### Screenshot Evidence — Module 02
 
-*(Ordered by capture timestamp; verify each caption against the actual image before publishing.)*
+*(Captions describe the expected step based on filename order — confirm against each image.)*
 
-| # | Screenshot | Expected content |
-|---|---|---|
-| 1 | `Screenshot 2026-11-18 052242.png` | Lab PDF placed on Desktop |
-| 2 | `Screenshot 2026-11-18 052406.png` | JTR installation/version check prompt and response |
-| 3 | `Screenshot 2026-11-18 052700.png` | Hash calculation prompt and response |
-| 4 | `Screenshot 2026-11-18 053031.png` | Password-recovery prompt issued |
-| 5 | `Screenshot 2026-11-18 053104.png` | JTR running against the PDF via HexStrike MCP |
-| 6 | `Screenshot 2026-11-18 053247.png` | JTR cracking progress / rockyou.txt in use |
-| 7 | `Screenshot 2026-11-18 053436.png` | Recovered password returned by Claude Desktop |
-| 8 | `Screenshot 2026-11-18 053517.png` | PDF opened with recovered password / flag visible |
+#### Lab PDF placed on Desktop
+<a href="JTR%20Claude/Screenshot%202026-11-18%20052242.png"><img src="JTR%20Claude/Screenshot%202026-11-18%20052242.png" alt="Lab PDF on Desktop" width="700"></a>
 
-```markdown
-![JTR password recovery via HexStrike MCP](Module-02-JTR-PDF-Password-Recovery/screenshots/Screenshot%202026-11-18%20053436.png)
-```
+#### JTR installation / version check
+<a href="JTR%20Claude/Screenshot%202026-11-18%20052406.png"><img src="JTR%20Claude/Screenshot%202026-11-18%20052406.png" alt="JTR version check" width="700"></a>
+
+#### Hash calculation prompt and response
+<a href="JTR%20Claude/Screenshot%202026-11-18%20052700.png"><img src="JTR%20Claude/Screenshot%202026-11-18%20052700.png" alt="Hash calculation" width="700"></a>
+
+#### Password recovery prompt issued
+<a href="JTR%20Claude/Screenshot%202026-11-18%20053031.png"><img src="JTR%20Claude/Screenshot%202026-11-18%20053031.png" alt="Password recovery prompt" width="700"></a>
+
+#### JTR running against the PDF via HexStrike MCP
+<a href="JTR%20Claude/Screenshot%202026-11-18%20053104.png"><img src="JTR%20Claude/Screenshot%202026-11-18%20053104.png" alt="JTR running" width="700"></a>
+
+#### JTR cracking progress with rockyou.txt
+<a href="JTR%20Claude/Screenshot%202026-11-18%20053247.png"><img src="JTR%20Claude/Screenshot%202026-11-18%20053247.png" alt="JTR cracking progress" width="700"></a>
+
+#### Recovered password returned by Claude Desktop
+<a href="JTR%20Claude/Screenshot%202026-11-18%20053436.png"><img src="JTR%20Claude/Screenshot%202026-11-18%20053436.png" alt="Recovered password" width="700"></a>
+
+#### PDF opened with recovered password / flag visible
+<a href="JTR%20Claude/Screenshot%202026-11-18%20053517.png"><img src="JTR%20Claude/Screenshot%202026-11-18%20053517.png" alt="PDF opened, flag visible" width="700"></a>
 
 ### Result
 The PDF's password was successfully recovered via JTR + rockyou.txt, driven entirely through AI prompts to Claude Desktop over the HexStrike MCP connection, and the recovery was confirmed by reopening the file.
@@ -384,7 +430,7 @@ nw{networkwalks_persistence_jtr_270521}
 
 ## Troubleshooting & Observations
 
-- The most common failure point in Module 01 is an incorrect absolute path in `claude_desktop_config.json` — the MCP server won't be picked up if the path to `hexstrike_mcp.py` doesn't match the actual clone location.
+- The most common failure point in Module 01 is an incorrect absolute path in `claude_desktop_config.json` — the MCP server won't be picked up if the path to `hexstrike_mcp.py` (or the venv's Python interpreter) doesn't match the actual clone location.
 - Claude Desktop must be fully restarted (not just the chat window closed) after editing the MCP config for changes to take effect.
 - Large wordlists like `rockyou.txt` are sometimes shipped compressed (`rockyou.txt.gz`) on Kali and need to be extracted before use.
 
